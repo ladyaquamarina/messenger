@@ -1,0 +1,20 @@
+server:
+  port: 8081
+
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/messenger
+    username: postgres
+    password: postgres
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: messenger
+      properties:
+        name: consumer
+        password: consumer
+    producer:
+      properties:
+        name: producer
+        password: producer
