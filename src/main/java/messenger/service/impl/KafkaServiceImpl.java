@@ -18,14 +18,15 @@ public class KafkaServiceImpl implements KafkaService<String, String> {
     private final KafkaTemplate<String, String> messageKafkaTemplate;
 
     @Override
-    public void sendMessage(String messageId) {
+    public Mono<String> sendMessage(String messageId) {
         messageKafkaTemplate.send(TOPIC_MESSAGE, messageId);
+        return Mono.just(messageId);
     }
 
     @Override
     @KafkaListener(topics = TOPIC_MESSAGE, containerFactory = "messageKafkaListenerContainerFactory")
-    public Mono<String> getMessageId(ConsumerRecord<String, String> consumerRecord) {
-
-        return null;
+    public Mono<String> getMessageId() {
+        String messageId = messageKafkaTemplate.receive(TOPIC_MESSAGE, 1, 1).value();
+        return Mono.just(messageId);
     }
 }

@@ -44,8 +44,8 @@ public class MessageServiceImpl implements MessageService {
                 })
                 .flatMap(messageRepository::save)
                 .zipWith(check, (entity, checkNotUser) -> checkNotUser ? entity : null)
-                .flatMap(entity -> kafkaService.sendMessage(entity.getId()))
-                .switchIfEmpty(Mono.just(messageEntity));
+                .flatMap(entity -> (Mono<MessageEntity>) kafkaService.sendMessage(entity.getId()))
+                .map(id -> messageEntity);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MessageServiceImpl implements MessageService {
                     if (check) {
                         throwException("Unauthorized access attempts");
                     }
-                    return kafkaService.getMessageId();
+                    return (Mono<String>) kafkaService.getMessageId();
                 })
                 .flatMap(messageRepository::findById);
     }

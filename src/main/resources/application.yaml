@@ -14,6 +14,7 @@ spring:
       properties:
         name: consumer
         password: consumer
+      max-poll-records: 1
     producer:
       properties:
         name: producer
