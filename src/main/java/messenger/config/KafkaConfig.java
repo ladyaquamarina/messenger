@@ -2,15 +2,21 @@ package messenger.config;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,11 +60,35 @@ public class KafkaConfig {
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         properties.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         properties.put(JsonDeserializer.REMOVE_TYPE_INFO_HEADERS, false);
-        properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
-        properties.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
-        properties.put(SaslConfigs.SASL_JAAS_CONFIG, String.format(
-                "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";", consumerName, consumerPassword
-        ));
+//        properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+//        properties.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
+//        properties.put(SaslConfigs.SASL_JAAS_CONFIG, String.format(
+//                "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";", consumerName, consumerPassword
+//        ));
         return properties;
+    }
+
+    @Bean
+    public ProducerFactory<String, String> producerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfig());
+    }
+
+    @Bean
+    public Map<String, Object> producerConfig() {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, server);
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+//        properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+//        properties.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
+//        properties.put(SaslConfigs.SASL_JAAS_CONFIG, String.format(
+//                "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";", producerName, producerPassword
+//        ));
+        return properties;
+    }
+
+    @Bean
+    KafkaTemplate<String, String> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
     }
 }
