@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("chats")
+@Table("chat")
 public class ChatEntity implements Persistable<String> {
     @Id
     @Column("id")

@@ -1,7 +1,6 @@
 package messenger.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import messenger.enums.MessageStatus;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table("messages")
+@Table("message")
 public class MessageEntity implements Persistable<String> {
     @Id
     @Column("id")

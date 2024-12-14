@@ -9,6 +9,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 @Service
 @RequiredArgsConstructor
 public class KafkaServiceImpl implements KafkaService<String, String> {
@@ -17,16 +19,18 @@ public class KafkaServiceImpl implements KafkaService<String, String> {
 
     private final KafkaTemplate<String, String> messageKafkaTemplate;
 
+    private final AtomicLong offset = new AtomicLong(0);
+
     @Override
-    public Mono<String> sendMessage(String messageId) {
-        messageKafkaTemplate.send(TOPIC_MESSAGE, messageId);
-        return Mono.just(messageId);
+    public Mono<MessageEntity> sendMessage(MessageEntity message) {
+        messageKafkaTemplate.send(TOPIC_MESSAGE, message.getId());
+        return Mono.just(message);
     }
 
     @Override
     @KafkaListener(topics = TOPIC_MESSAGE, containerFactory = "messageKafkaListenerContainerFactory")
     public Mono<String> getMessageId() {
-        String messageId = messageKafkaTemplate.receive(TOPIC_MESSAGE, 1, 1).value();
+        String messageId = messageKafkaTemplate.receive(TOPIC_MESSAGE, 0, offset.getAndIncrement()).value();
         return Mono.just(messageId);
     }
 }

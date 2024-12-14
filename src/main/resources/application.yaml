@@ -1,11 +1,16 @@
 server:
-  port: 8081
+  port: 8089
 
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/messenger
+    url: r2dbc:postgresql://localhost:6432/messenger
     username: postgres
     password: postgres
+
+  flyway:
+    password: postgres
+    user: postgres
+    url: jdbc:postgresql://localhost:6432/messenger
 
   kafka:
     bootstrap-servers: localhost:29092

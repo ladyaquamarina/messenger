@@ -1,9 +1,7 @@
 package messenger.config;
 
-import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,7 +86,9 @@ public class KafkaConfig {
     }
 
     @Bean
-    KafkaTemplate<String, String> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+    KafkaTemplate<String, String> messageKafkaTemplate() {
+        KafkaTemplate<String, String> template = new KafkaTemplate<>(producerFactory());
+        template.setConsumerFactory(messageConsumerFactory());
+        return template;
     }
 }

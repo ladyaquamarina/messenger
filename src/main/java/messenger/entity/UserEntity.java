@@ -13,7 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("users")
+@Table("user")
 public class UserEntity implements Persistable<String> {
 
     @Id
