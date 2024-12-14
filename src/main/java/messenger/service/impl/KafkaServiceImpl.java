@@ -19,7 +19,7 @@ public class KafkaServiceImpl implements KafkaService<String, String> {
 
     private final KafkaTemplate<String, String> messageKafkaTemplate;
 
-    private final AtomicLong offset = new AtomicLong(0);
+    private Long offset = 0L;
 
     @Override
     public Mono<MessageEntity> sendMessage(MessageEntity message) {
@@ -30,7 +30,16 @@ public class KafkaServiceImpl implements KafkaService<String, String> {
     @Override
     @KafkaListener(topics = TOPIC_MESSAGE, containerFactory = "messageKafkaListenerContainerFactory")
     public Mono<String> getMessageId() {
-        String messageId = messageKafkaTemplate.receive(TOPIC_MESSAGE, 0, offset.getAndIncrement()).value();
+        String messageId;
+        synchronized (offset) {
+            ConsumerRecord<String, String> kafkaMessage = messageKafkaTemplate.receive(TOPIC_MESSAGE, 0, offset);
+            if (kafkaMessage != null) {
+                offset++;
+                messageId = kafkaMessage.value();
+            } else {
+                messageId = null;
+            }
+        }
         return Mono.just(messageId);
     }
 }
