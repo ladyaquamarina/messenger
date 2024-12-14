@@ -1,4 +1,4 @@
 # messenger
 
-Выполнить docker-compose.yml, потом запустить проект (в MessengerApplication).
-БД изначально пустая
+Выполнить docker-compose.yaml, потом запустить проект (в MessengerApplication).
+БД изначально заполняется небольшим количеством данных для тестирования
